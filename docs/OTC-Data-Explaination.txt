@@ -1,0 +1,11 @@
+Data was obtained from the Oklahoma Tax Commission after following their data request procedures.
+
+The data provided by the OTC was describe as such:
+
+There exists a file (Layout for Outside Entities.xlsx) which contains the type, location, size and format for all the data files available on the MOVEit ftp. You will notice there are five tabs. The first tab contains the information for the layout of the data files which house the historical production information. There are three files. One file ends with 12.dat, one with 36.dat and one GTR36.dat. The 12.dat file contains the last twelve months of reported production. The 36.dat contains the last 36 months of reported production. The GTR36.dat contains all reported production beyond three years.
+ 
+There are also files for qualifying tax rates, exemptions, lease legal information and operators.
+ 
+All of the files are updated on the tenth of each month. It can take more than a day for some of the uploads to complete. As an approved user of the Gross Production Extract folder, you will receive emails each month when the data files have completed updating.
+ 
+There is no value information in the Gross Production Extract files.

@@ -1,3 +1,7 @@
+# Custom User Ignored Files
+#--------------------------
+data/*
+
 # History files
 .Rhistory
 .Rapp.history
