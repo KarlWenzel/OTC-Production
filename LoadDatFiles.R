@@ -1,7 +1,7 @@
 library(RODBC)
 library(lubridate)
 
-setwd("e:/git/OTC-Production/data")
+setwd("d:/git/OTC-Production/data")
 
 sql_dsn = "OTC"
 conn = odbcConnect(sql_dsn)
@@ -10,7 +10,7 @@ load.exp_gpexempt.dat = FALSE
 load.exp_gpoper.dat = FALSE
 load.exp_gpqtrat.dat = FALSE
 load.exp_gplease.dat = FALSE
-load.exp_gph_reports_12.dat = TRUE
+load.exp_gph_reports_12.dat = FALSE
 load.exp_gph_reports_36.dat = TRUE
 
 if (load.exp_gpexempt.dat) {
