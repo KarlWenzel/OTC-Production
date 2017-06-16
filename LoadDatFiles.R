@@ -11,7 +11,7 @@ load.exp_gpoper.dat = FALSE
 load.exp_gpqtrat.dat = FALSE
 load.exp_gplease.dat = FALSE
 load.exp_gph_reports_12.dat = FALSE
-load.exp_gph_reports_36.dat = TRUE
+load.exp_gph_reports_36.dat = FALSE
 
 if (load.exp_gpexempt.dat) {
   sqlQuery(conn, "DELETE FROM exp_gpexempt")
