@@ -256,7 +256,16 @@ get.curve = function(data, product) {
 }
 
 get.interval.percents = function(data, product){
-  total.production = 
+  total.production = sum(data)
+  return(data.frame(
+    product = product,
+    first18mo = sum(data[1:18]) / total.production,
+    first2yrs = sum(data[1:24]) / total.production,
+    first3yrs = sum(data[1:36]) / total.production,
+    first4yrs = sum(data[1:48]) / total.production,
+    first5yrs = sum(data[1:60]) / total.production,
+    last10of20yrs = sum(data[121:240]) / total.production
+  ));
 }
 
 if (build.hyperbolic.model) {
@@ -272,10 +281,14 @@ if (build.hyperbolic.model) {
   write.csv(data, paste0(reports_folder, "/empirical-production-curves.csv"))
   
   gas.curve = get.curve(data, "Gas")
-  oil.curve = get.curve(data, "Oil")
-  
+  oil.curve = get.curve(data, "Oil")  
   write.csv(gas.curve, paste0(reports_folder, "/estimated-gas-curve.csv"))
   write.csv(oil.curve, paste0(reports_folder, "/estimated-oil-curve.csv"))
+  
+  gas.interval.percents = get.interval.percents(gas.curve, "Gas")
+  oil.interval.percents = get.interval.percents(oil.curve, "Oil")
+  write.csv(rbind(gas.interval.percents, oil.interval.percents), paste0(reports_folder, "/estimated-production-intervals.csv"))
+  
 }
 
 odbcClose(conn)
