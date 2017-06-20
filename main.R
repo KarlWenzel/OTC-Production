@@ -232,19 +232,36 @@ if (process.raw.data) {
 ###############
 
 hyperbolic.curve = function(qi, Di, b, t) {
-  return( qi / (1 + b * Di * t) ^ (1 / b) );
+  return( qi / (1 + b * Di * t) ^ (1 / b) )
+}
+
+get.b.estimate = function(q, qi, Di) {
+  df = data.frame(
+    b.vals = 0.01*1:100,
+    mean.squared.errors = rep(0,100)
+  )
+  t = 1:(length(q) - 2) # shorten time range to skip q0 and q1
+  for (i in 1:100) {
+    curve = hyperbolic.curve(qi, Di, df$b[i], t)
+    df$mean.squared.errors[i] = mean((q[t+2] - curve)^2)
+  }
+  df
 }
 
 get.curve = function(data, product) {
   # build curve
-  q = melt(data[data$Product==product, 2+(1:24)])$value
+  q = melt(data[data$Product==product, 2+(1:22)])$value
   q0 = q[1]
-  q1_23 = q[2:24]
-  qi = q1_23[1]
-  Di = -1 * (q1_23[2] - q1_23[1])
-  b = 0.5
+  qi = q[2]
+  
+  Di = -1 * min( (q[2 + 1:10] - q[2]) / 1:10 ) #+ 0.015
+  
+  print(get.b.estimate(q,qi,Di))
+  
+  b = 0.69
   t = 1:((12*20) - 2) # 20 years worth of months, minus two months (q0 and qi)
   curve = c(q0, qi, hyperbolic.curve(qi, Di, b, t))
+    
   # save plot as pdf
   pdf(file=paste0(reports_folder, "/", product, "-decline-curve.pdf"))
   plot(t[1:36], curve[1:36], type="l", col="red", xlab="Month", ylab="Normalized Production", ylim=c(0,1))
@@ -252,6 +269,7 @@ get.curve = function(data, product) {
   title(paste0("Normalized ", product, " Production in Horizontal Wells Since Feb 2014"))
   print(dev.cur())
   dev.off()
+  
   return(curve)
 }
 
