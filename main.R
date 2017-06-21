@@ -6,8 +6,8 @@ library(reshape2)
 # CONFIGURATION #
 #################
 
-data_folder = "d:/git/OTC-Production/data"
-reports_folder = "d:/git/OTC-Production/reports"
+data_folder = "e:/git/OTC-Production/data"
+reports_folder = "e:/git/OTC-Production/reports"
 sql_dsn = "OTC"
 first_time_run = FALSE
 
@@ -20,7 +20,7 @@ load.exp_gpqtrat.dat = FALSE
 load.exp_gplease.dat = FALSE
 load.exp_gph_reports_12.dat = FALSE
 load.exp_gph_reports_36.dat = FALSE
-process.raw.data = FALSE
+process.raw.data = TRUE
 build.hyperbolic.model = TRUE
 
 # Apply configuration, get connection to database
