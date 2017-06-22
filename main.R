@@ -265,11 +265,20 @@ get.curve = function(data, product) {
   t = 1:((12*20) - 2) # 20 years worth of months, minus two months (q0 and qi)
   curve = c(q0, qi, hyperbolic.curve(qi, Di, b, t))
   
-  # save plot as pdf
+  # save plot 1 as pdf
   pdf(file=paste0(reports_folder, "/", product, "-decline-curve.pdf"))
   plot(t[1:48], curve[1:48], type="l", col="red", xlab="Month", ylab="Normalized Production", ylim=c(0,1))
   points(1:length(q), q)
   title(paste0("Normalized ", product, " Production in Horizontal Wells Since Feb 2014"))
+  print(dev.cur())
+  dev.off()
+  
+  df = data.frame(Months=1:length(curve), Percent.Max.Production=curve*100)
+  g = ggplot(data=df, aes(x=Months, y=Percent.Max.Production)) 
+  g = g + geom_line(stat="identity") 
+  g = g + ggtitle(paste0(product, " Production Decline Curve"))
+  pdf(file=paste0(reports_folder, "/", product, "-decline-curve2.pdf"))
+  plot(g)
   print(dev.cur())
   dev.off()
   
