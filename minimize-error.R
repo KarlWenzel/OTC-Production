@@ -1,11 +1,13 @@
 
 
-f = function(p) {
-  q = melt(data[data$Product=="Oil", 2+(1:22)])$value
+f = function(p, q) {
   qi = q[2]
-  t = 3:24
+  Di = p[1]
+  b = p[2]
+  t = 1:34
   curve = hyperbolic.curve(qi, p[1], p[2], t)
-  return(sum((curve - data[t])^2))
+  return(sum((curve - q[t+2])^2))
 }
 
-#nlm(f, p = c(0.5, 0.5))
+q = melt(data[data$Product=="Oil", 2+(1:36)])$value
+x = nlm(f, p=c(0.12, 1.357801), q=q)

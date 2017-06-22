@@ -20,7 +20,7 @@ load.exp_gpqtrat.dat = FALSE
 load.exp_gplease.dat = FALSE
 load.exp_gph_reports_12.dat = FALSE
 load.exp_gph_reports_36.dat = FALSE
-process.raw.data = TRUE
+process.raw.data = FALSE 
 build.hyperbolic.model = TRUE
 
 # Apply configuration, get connection to database
@@ -235,36 +235,39 @@ hyperbolic.curve = function(qi, Di, b, t) {
   return( qi / (1 + b * Di * t) ^ (1 / b) )
 }
 
-get.b.estimate = function(q, qi, Di) {
-  df = data.frame(
-    b.vals = 0.01*1:100,
-    mean.squared.errors = rep(0,100)
-  )
-  t = 1:(length(q) - 2) # shorten time range to skip q0 and q1
-  for (i in 1:100) {
-    curve = hyperbolic.curve(qi, Di, df$b[i], t)
-    df$mean.squared.errors[i] = mean((q[t+2] - curve)^2)
-  }
-  df
+get.di.estimate = function(q) {
+  return(-1 * min( (q[2+1:5] - q[2]) / 1:5 ) )
+}
+
+get.hyperbolic.error = function(p, q) {
+  qi = q[2]
+  Di = get.di.estimate(q)
+  b = p[1]
+  t = 1:length(q)-2
+  curve = hyperbolic.curve(qi, Di, b, t)
+  return( sum((curve - q[t+2])^2) )
 }
 
 get.curve = function(data, product) {
-  # build curve
-  q = melt(data[data$Product==product, 2+(1:22)])$value
+  
+  #skip first 2 cols and take p0 thru p35 and melt it into a vector
+  q = melt(data[data$Product==product, 2+(1:36)])$value  
   q0 = q[1]
   qi = q[2]
+  Di = get.di.estimate(q)
   
-  Di = -1 * min( (q[2 + 1:10] - q[2]) / 1:10 ) #+ 0.015
+  #estimate the best fit for our Di and b values 
+  result = nlm(get.hyperbolic.error, p=c(1), q=q)
+  b = result$estimate[1]
   
-  print(get.b.estimate(q,qi,Di))
+  print(paste("Product:", product, ";  Di:", Di, ";  b:", b))
   
-  b = 0.69
   t = 1:((12*20) - 2) # 20 years worth of months, minus two months (q0 and qi)
   curve = c(q0, qi, hyperbolic.curve(qi, Di, b, t))
-    
+  
   # save plot as pdf
   pdf(file=paste0(reports_folder, "/", product, "-decline-curve.pdf"))
-  plot(t[1:36], curve[1:36], type="l", col="red", xlab="Month", ylab="Normalized Production", ylim=c(0,1))
+  plot(t[1:48], curve[1:48], type="l", col="red", xlab="Month", ylab="Normalized Production", ylim=c(0,1))
   points(1:length(q), q)
   title(paste0("Normalized ", product, " Production in Horizontal Wells Since Feb 2014"))
   print(dev.cur())
@@ -294,7 +297,7 @@ if (build.hyperbolic.model) {
   # to rescale the data again to a new normalized data set to ensure that data ranges from (0,1]
   
   for (i in 1:nrow(data)) {
-    data[i,3:26] = data[i,3:26] / max(data[i,3:26])
+    data[i,2+1:36] = data[i,2+1:36] / max(data[i,2+1:36])
   }
   write.csv(data, paste0(reports_folder, "/empirical-production-curves.csv"))
   
