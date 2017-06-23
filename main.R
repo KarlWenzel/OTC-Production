@@ -7,8 +7,8 @@ library(ggplot2)
 # CONFIGURATION #
 #################
 
-data_folder = "d:/git/OTC-Production/data"
-reports_folder = "d:/git/OTC-Production/reports"
+data_folder = "e:/git/OTC-Production/data"
+reports_folder = "e:/git/OTC-Production/reports"
 sql_dsn = "OTC"
 first_time_run = FALSE
 
@@ -23,6 +23,7 @@ load.exp_gph_reports_12.dat = FALSE
 load.exp_gph_reports_36.dat = FALSE
 process.raw.data = FALSE 
 build.hyperbolic.model = TRUE
+build.reports = TRUE
 
 # Apply configuration, get connection to database
 
@@ -38,6 +39,7 @@ if (first_time_run) {
   load.exp_gph_reports_36.dat = TRUE
   process.raw.data = TRUE
   build.hyperbolic.model = TRUE
+  build.reports = TRUE
 }
 
 #################
@@ -236,28 +238,28 @@ hyperbolic.curve = function(qi, Di, b, t) {
   return( qi / (1 + b * Di * t) ^ (1 / b) )
 }
 
-get.di.estimate = function(q) {
+get.Di.estimate = function(q) {
   return(-1 * min( (q[2+1:5] - q[2]) / 1:5 ) )
 }
 
 get.hyperbolic.error = function(p, q) {
   qi = q[2]
-  Di = get.di.estimate(q)
+  Di = get.Di.estimate(q)
   b = p[1]
   t = 1:length(q)-2
   curve = hyperbolic.curve(qi, Di, b, t)
   return( sum((curve - q[t+2])^2) )
 }
 
-get.curve = function(data, product) {
+get.model = function(data, product) {
   
   #skip first 2 cols and take p0 thru p35 and melt it into a vector
   q = melt(data[data$Product==product, 2+(1:36)])$value  
   q0 = q[1]
   qi = q[2]
-  Di = get.di.estimate(q)
+  Di = get.Di.estimate(q)
   
-  #estimate the best fit for our Di and b values 
+  #estimate the best fit b values 
   result = nlm(get.hyperbolic.error, p=c(1), q=q)
   b = result$estimate[1]
   
@@ -265,6 +267,19 @@ get.curve = function(data, product) {
   
   t = 1:((12*20) - 2) # 20 years worth of months, minus two months (q0 and qi)
   curve = c(q0, qi, hyperbolic.curve(qi, Di, b, t))
+  write.csv(curve, paste0(reports_folder, "/estimated-", product, "-curve.csv"))
+  
+  cumulative = rep(0, length(curve))
+  for (i in 1:length(curve)) {
+    if (i > 1) {
+      cumulative[i] = curve[i] + cumulative[i - 1]
+    }
+    else {
+      cumulative[i] = curve[i]
+    }
+  }
+  cumulative = cumulative / max(cumulative)
+  write.csv(cumulative, paste0(reports_folder, "/estimated-", product, "-cumulative.csv"))
   
   # save plot 1 as pdf
   pdf(file=paste0(reports_folder, "/", product, "-decline-curve.pdf"))
@@ -273,16 +288,7 @@ get.curve = function(data, product) {
   title(paste0("Normalized ", product, " Production in Horizontal Wells Since Feb 2014"))
   print(dev.cur())
   dev.off()
-  
-  df = data.frame(Months=1:length(curve), Percent.Max.Production=curve*100)
-  g = ggplot(data=df, aes(x=Months, y=Percent.Max.Production)) 
-  g = g + geom_line(stat="identity") 
-  g = g + ggtitle(paste0(product, " Production Decline Curve"))
-  pdf(file=paste0(reports_folder, "/", product, "-decline-curve2.pdf"))
-  plot(g)
-  print(dev.cur())
-  dev.off()
-  
+
   return(curve)
 }
 
@@ -311,14 +317,16 @@ if (build.hyperbolic.model) {
   }
   write.csv(data, paste0(reports_folder, "/empirical-production-curves.csv"))
   
-  gas.curve = get.curve(data, "Gas")
-  oil.curve = get.curve(data, "Oil")  
-  write.csv(gas.curve, paste0(reports_folder, "/estimated-gas-curve.csv"))
-  write.csv(oil.curve, paste0(reports_folder, "/estimated-oil-curve.csv"))
+  gas.curve = get.model(data, "Gas")
+  oil.curve = get.model(data, "Oil")
   
   gas.interval.percents = get.interval.percents(gas.curve, "Gas")
   oil.interval.percents = get.interval.percents(oil.curve, "Oil")
   write.csv(rbind(gas.interval.percents, oil.interval.percents), paste0(reports_folder, "/estimated-production-intervals.csv"))
+  
+}
+
+if (build.reports) {
   
 }
 
