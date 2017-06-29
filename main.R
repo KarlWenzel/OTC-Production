@@ -263,7 +263,7 @@ get.curve = function(data, product) {
   
   print(paste("Product:", product, ";  Di:", Di, ";  b:", b))
   
-  t = 1:((12*20) - 2) # 20 years worth of months, minus two months (q0 and qi)
+  t = 1:((12*30) - 2) # 30 years worth of months, minus two months (q0 and qi)
   curve = c(q0, qi, hyperbolic.curve(qi, Di, b, t))
   
   # save plot 1 as pdf
@@ -295,7 +295,7 @@ get.interval.percents = function(data, product){
     first3yrs = sum(data[1:36]) / total.production,
     first4yrs = sum(data[1:48]) / total.production,
     first5yrs = sum(data[1:60]) / total.production,
-    last10of20yrs = sum(data[121:240]) / total.production
+    last10of30yrs = sum(data[241:360]) / total.production
   ));
 }
 
