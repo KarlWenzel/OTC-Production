@@ -1,9 +1,19 @@
 # OTC-Production
-Decline curve analysis of horizontal oil and gas wells in Oklahoma
+Decline curve analysis of horizontal oil and gas wells in Oklahoma over a 30 year period.
 
 ### Goals
 
 Determine the statewide average percentage decline in gross production volume from all recent horizontal oil wells combined and horizontal gas wells combined during the wells' first year, 18 months, 2 years, 3 years, 4 years and 5 years.
+
+### Summary of Results
+
+The results of the data analysis described herein may be found in the [Reports Folder](/reports).  Here is a quick summary of the findings:
+
+| Product | First 18 Months | First 2 Years | First 3 Years | First 4 Years | First 5 Years | Years 20-30 |
+|---------|-------------|-------------|-------------|-------------|-------------|-------------|
+| Gas     | 32.95%      | 39.49%      | 49.36%      | 56.58%      | 62.17%      | 7.07%       |
+| Oil     | 46.07%      | 52.75%      | 61.98%      | 68.22%      | 72.80%      | 4.69%       |
+
 
 ### Data
 
@@ -42,7 +52,7 @@ The goal is to observe production rates of recently drilled horizontal wells.  T
 
 4. To describe all recently drilled horizontal wells in Oklahoma, the data in exp_gph_reports_12.dat and exp_gph_reports_36.dat was used for all wells that were drilled not later than Feb 2014.  Only non-negative production values were used, and when amended reports were found, they were used to replace the corresponding values for normal reports (i.e. where report_type_code == '03', it was used to replace records where report_type_code == '01').  The non-negative production values were aggregated for each month, for each PUN, for each product_code.  Then for each well the data was normalized to fall within the range of (0,1].  After normalizing, the wells were averaged together to create a single, representative well for analysis, which was then normalized again to fall in the range of (0,1].
 
-5.  A hyperbolic curve was used to extrapolate production into the future, so that the lifetime production of our average well could be estimated.  Some explanation for use of the hyperbolic curve may be found [here](http://www.petrocenter.com/reservoir/DCA_theory.htm) and [here](http://fekete.com/SAN/WebHelp/FeketeHarmony/Harmony_WebHelp/Content/HTML_Files/Reference_Material/Analysis_Method_Theory/Traditional_Decline_Theory.htm) Since the second month of production was the maximum flow rate for both oil and gas wells, this value was used for qi, and the minimum slope between the second month and the next several months was used for Di.  The best fitting value for b was determined using a non-linear minimization technique (R's nlm() function), and the curve fit very nicely to our observed values.
+5.  A hyperbolic curve was used to extrapolate production into the future, so that the lifetime production of our average well could be estimated.  Some explanation for use of the hyperbolic curve may be found [here](http://www.petrocenter.com/reservoir/DCA_theory.htm) and [here](http://fekete.com/SAN/WebHelp/FeketeHarmony/Harmony_WebHelp/Content/HTML_Files/Reference_Material/Analysis_Method_Theory/Traditional_Decline_Theory.htm) Since the second month of production was the maximum flow rate for both oil and gas wells, this value was used for qi, and the minimum slope between the second month and the next several months was used for Di.  The best fitting value for b was determined using a non-linear minimization technique (R's `nlm()` function), and the curve fit very nicely to our observed values.
 
 ### Ways to Improve
 
