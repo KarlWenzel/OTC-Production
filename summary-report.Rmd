@@ -1,0 +1,77 @@
+---
+title: "OTC Production Data Summary"
+author: "Karl Wenzel"
+date: "June 30, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Synopsis
+
+Decline curves blah blah
+
+## Empirical Data with Hyperbolic Curve
+
+```{r message=FALSE}
+library(reshape2)
+library(ggplot2)
+data_folder = "d:/git/OTC-Production/data"
+reports_folder = "d:/git/OTC-Production/reports"
+
+empirical.rates = read.csv( paste0(reports_folder, "/empirical-production-curves.csv") )
+
+oil.emp.rate = empirical.rates[empirical.rates$Product=="Oil", 3+1:36]
+oil.prod.rate = read.csv( paste0(reports_folder, "/estimated-Oil-curve.csv") )$x
+oil.cumulative = read.csv( paste0(reports_folder, "/estimated-Oil-cumulative.csv") )$x
+
+gas.emp.rate = empirical.rates[empirical.rates$Product=="Gas", 3+1:36]
+gas.prod.rate = read.csv( paste0(reports_folder, "/estimated-Gas-curve.csv") )$x
+gas.cumulative = read.csv( paste0(reports_folder, "/estimated-Gas-cumulative.csv") )$x
+
+plot(1:48, oil.prod.rate[1:48], type="l", col="red", xlab="Month", ylab="Normalized Production", ylim=c(0,1))
+points(1:length(oil.emp.rate), oil.emp.rate)
+title(paste0("Normalized ", "Oil Production in Horizontal Wells Since Feb 2014"))
+
+plot(1:48, gas.prod.rate[1:48], type="l", col="red", xlab="Month", ylab="Normalized Production", ylim=c(0,1))
+points(1:length(gas.emp.rate), gas.emp.rate)
+title(paste0("Normalized ", "Gas Production in Horizontal Wells Since Feb 2014"))
+
+df = rbind(
+  data.frame(
+    Years = 1:length(oil.prod.rate) / 12, 
+    Category = rep("Cumulative Total", length(oil.prod.rate)), 
+    Oil = oil.cumulative * 100
+  ),
+  data.frame(
+    Years = 1:length(oil.prod.rate) / 12, 
+    Category = rep("Production Rate", length(oil.prod.rate)), 
+    Oil = oil.prod.rate * 100
+  )
+)
+g = ggplot(data=df, aes(x=Years, y=Oil, group=Category, color=Category, width=5, height=2)) 
+g = g + geom_line(size=1)
+g = g + ggtitle("Average Normalized Horizontal Oil Well Production in Oklahoma")
+plot(g)
+
+df = rbind(
+  data.frame(
+    Years = 1:length(gas.cumulative) / 12, 
+    Category = rep("Cumulative Total", length(gas.cumulative)), 
+    Gas = gas.cumulative * 100
+  ),
+  data.frame(
+    Years = 1:length(gas.prod.rate) / 12, 
+    Category = rep("Production Rate", length(gas.prod.rate)), 
+    Gas = gas.prod.rate * 100
+  )
+)
+g = ggplot(data=df, aes(x=Years, y=Gas, group=Category, color=Category)) 
+g = g + geom_line(size=1)
+g = g + ggtitle("Average Normalized Horizontal Gas Well Production in Oklahoma")
+plot(g)
+
+```
+

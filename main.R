@@ -7,8 +7,8 @@ library(ggplot2)
 # CONFIGURATION #
 #################
 
-data_folder = "e:/git/OTC-Production/data"
-reports_folder = "e:/git/OTC-Production/reports"
+data_folder = "d:/git/OTC-Production/data"
+reports_folder = "d:/git/OTC-Production/reports"
 sql_dsn = "OTC"
 first_time_run = FALSE
 
