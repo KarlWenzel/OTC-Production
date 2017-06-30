@@ -30,10 +30,10 @@ This data project was built using [Microsoft SQL Server](https://www.microsoft.c
 3.  [Create a DSN](https://support.microsoft.com/en-us/help/965049/how-to-set-up-a-microsoft-sql-server-odbc-data-source) for the new database, and call it "OTC".
 
 4.  Edit the settings at the top of the [main.R](main.R) file:
-    - data_folder (the path to the folder that has your data from step 1)
-    - reports_folder (the path to the folder that you want your report data to be saved in)
-    - sql_dsn (the name of the ODBC DSN that you created in step 3)
-    - first_time_run (set this to TRUE)
+    - `data_folder` (the path to the folder that has your data from step 1)
+    - `reports_folder` (the path to the folder that you want your report data to be saved in)
+    - `sql_dsn` (the name of the ODBC DSN that you created in step 3)
+    - `first_time_run` (set this to TRUE)
 
 5.  Execute the main.R script (this takes a while).  This script does three things:
     - Loads the raw OTC data into the SQL database
@@ -52,7 +52,7 @@ The goal is to observe production rates of recently drilled horizontal wells.  T
 
 4. To describe all recently drilled horizontal wells in Oklahoma, the data in exp_gph_reports_12.dat and exp_gph_reports_36.dat was used for all wells that were drilled not later than Feb 2014.  Only non-negative production values were used, and when amended reports were found, they were used to replace the corresponding values for normal reports (i.e. where `report_type_code == '03'`, it was used to replace records where `report_type_code == '01'`).  The non-negative production values were aggregated for each month, for each PUN, for each product_code.  Then for each well the data was normalized to fall within the range of (0,1].  After normalizing, the wells were averaged together to create a single, representative well for analysis, which was then normalized again to fall in the range of (0,1].
 
-5.  A hyperbolic curve was used to extrapolate production into the future, so that the lifetime production of our average well could be estimated.  Some explanation for use of the hyperbolic curve may be found [here](http://www.petrocenter.com/reservoir/DCA_theory.htm) and [here](http://fekete.com/SAN/WebHelp/FeketeHarmony/Harmony_WebHelp/Content/HTML_Files/Reference_Material/Analysis_Method_Theory/Traditional_Decline_Theory.htm) Since the second month of production was the maximum flow rate for both oil and gas wells, this value was used for `qi`, and the minimum slope between the second month and the next several months was used for `Di`.  The best fitting value for `b` was determined using a non-linear minimization technique (R's `nlm()` function), and the curve fit very nicely to our observed values.
+5.  A hyperbolic curve was used to extrapolate production into the future, so that the lifetime production of our average well could be estimated.  Some explanation for use of the hyperbolic curve may be found [here](http://www.petrocenter.com/reservoir/DCA_theory.htm) and [here](http://fekete.com/SAN/WebHelp/FeketeHarmony/Harmony_WebHelp/Content/HTML_Files/Reference_Material/Analysis_Method_Theory/Traditional_Decline_Theory.htm). Since the second month of production was the maximum flow rate for both oil and gas wells, this value was used for `qi`, and the minimum slope between the second month and the next several months was used for `Di`.  The best fitting value for `b` was determined using a non-linear minimization technique (R's `nlm()` function), and the curve fit very nicely to our observed values.
 
 ### Ways to Improve
 
