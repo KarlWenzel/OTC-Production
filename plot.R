@@ -15,14 +15,14 @@ df = rbind(
   data.frame(
     Years = 1:length(oil.prod.rate) / 12, 
     Category = rep("Production Rate", length(oil.prod.rate)), 
-    Oil = oil.est * 100
+    Oil = oil.prod.rate * 100
   )
   
 )
 
 g = ggplot(data=df, aes(x=Years, y=Oil, group=Category, color=Category)) 
 g = g + geom_line(size=1)
-g = g + ggtitle("Average Normalized Horizontal Oil Well Production")
+g = g + ggtitle("Average Normalized Horizontal Oil Well Production in Oklahoma")
 
 plot(g)
 ggsave(paste0(reports_folder, "/Average-Normalized-Horizontal-Oil-Well-Production.png"), width=10, height=5)
@@ -49,7 +49,7 @@ df = rbind(
 
 g = ggplot(data=df, aes(x=Years, y=Gas, group=Category, color=Category)) 
 g = g + geom_line(size=1)
-g = g + ggtitle("Average Normalized Horizontal Gas Well Production")
+g = g + ggtitle("Average Normalized Horizontal Gas Well Production in Oklahoma")
 
 plot(g)
 ggsave(paste0(reports_folder, "/Average-Normalized-Horizontal-Gas-Well-Production.png"), width=10, height=5)
