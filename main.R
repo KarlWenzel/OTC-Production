@@ -22,8 +22,8 @@ load.exp_gplease.dat = FALSE
 load.exp_gph_reports_12.dat = FALSE
 load.exp_gph_reports_36.dat = FALSE
 process.raw.data = FALSE 
-build.hyperbolic.model = TRUE
-build.reports = TRUE
+build.hyperbolic.model = FALSE
+build.30.year.curves = TRUE
 
 # Apply configuration, get connection to database
 
@@ -39,7 +39,7 @@ if (first_time_run) {
   load.exp_gph_reports_36.dat = TRUE
   process.raw.data = TRUE
   build.hyperbolic.model = TRUE
-  build.reports = TRUE
+  build.30.year.curves = TRUE
 }
 
 #################
@@ -326,8 +326,49 @@ if (build.hyperbolic.model) {
   
 }
 
-if (build.reports) {
+if (build.30.year.curves) {
+  print("Building 30 Year Curves")
   
+  oil.prod.rate = read.csv( paste0(reports_folder, "/estimated-Oil-curve.csv") )$x
+  oil.cumulative = read.csv( paste0(reports_folder, "/estimated-Oil-cumulative.csv") )$x
+  df = rbind(
+    data.frame(
+      Years = 1:length(oil.prod.rate) / 12, 
+      Category = rep("Cumulative Total", length(oil.prod.rate)), 
+      Oil = oil.cumulative * 100
+    ),
+    data.frame(
+      Years = 1:length(oil.prod.rate) / 12, 
+      Category = rep("Production Rate", length(oil.prod.rate)), 
+      Oil = oil.prod.rate * 100
+    )
+  )
+  g = ggplot(data=df, aes(x=Years, y=Oil, group=Category, color=Category)) 
+  g = g + geom_line(size=1)
+  g = g + ggtitle("Average Normalized Horizontal Oil Well Production in Oklahoma")
+  plot(g)
+  ggsave(paste0(reports_folder, "/Average-Normalized-Horizontal-Oil-Well-Production.png"), width=10, height=5)
+  
+  
+  gas.prod.rate = read.csv( paste0(reports_folder, "/estimated-Gas-curve.csv") )$x
+  gas.cumulative = read.csv( paste0(reports_folder, "/estimated-Gas-cumulative.csv") )$x
+  df = rbind(
+    data.frame(
+      Years = 1:length(gas.cumulative) / 12, 
+      Category = rep("Cumulative Total", length(gas.cumulative)), 
+      Gas = gas.cumulative * 100
+    ),
+    data.frame(
+      Years = 1:length(gas.prod.rate) / 12, 
+      Category = rep("Production Rate", length(gas.prod.rate)), 
+      Gas = gas.prod.rate * 100
+    )
+  )
+  g = ggplot(data=df, aes(x=Years, y=Gas, group=Category, color=Category)) 
+  g = g + geom_line(size=1)
+  g = g + ggtitle("Average Normalized Horizontal Gas Well Production in Oklahoma")
+  plot(g)
+  ggsave(paste0(reports_folder, "/Average-Normalized-Horizontal-Gas-Well-Production.png"), width=10, height=5)
 }
 
 odbcClose(conn)
