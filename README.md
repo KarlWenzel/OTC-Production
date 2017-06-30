@@ -11,7 +11,7 @@ The data used in this project comes from the [Oklahoma Tax Commission](https://w
 
 ### Method
 
-This software use built using Microsoft SQL Server and RStudio.  The steps provided herein assume that you are using a Windows system, however the RODBC driver is used for database connectivity, so with minor changes to setting up the database, these steps should work on other systems and database as well.
+This software use built using Microsoft SQL Server and RStudio.  The steps provided herein assume that you are using a Windows system, however the RODBC driver is used for database connectivity, so with minor changes to setting up the database, these steps should work on other systems and databases as well.
 
 1.  Obtain the OTC data set for well production (you will need to request permission to download).  Store the data files in a subfolder called /data.
 
@@ -28,7 +28,7 @@ This software use built using Microsoft SQL Server and RStudio.  The steps provi
 5.  Execute the main.R script (this takes a while).  This script does three things:
     - Loads the raw OTC data into the SQL database
     - Executes some stored procedures to process the data
-    - Saves report
+    - Saves reports
     
 ### Assumptions
 
